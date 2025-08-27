@@ -1,0 +1,75 @@
+CLASS Ticket
+    ATTRIBUTES:
+        movieName
+        seatNumber
+        price
+        isBooked   // true or false
+
+    METHOD constructor(movieName, seatNumber, price):
+        SET this.movieName = movieName
+        SET this.seatNumber = seatNumber
+        SET this.price = price
+        SET isBooked = true
+
+    METHOD cancel():
+        SET isBooked = false
+END CLASS
+
+
+CLASS Theatre
+    ATTRIBUTES:
+        theatreName
+        movieSchedule   // list of movies with timings
+        availableSeats  // list of seat numbers
+        ticketsIssued   // list of Ticket objects
+
+    METHOD bookTicket(movieName, seatNumber, price):
+        IF seatNumber in availableSeats
+            CREATE new Ticket(movieName, seatNumber, price)
+            REMOVE seatNumber from availableSeats
+            ADD ticket to ticketsIssued
+            PRINT "Ticket booked successfully!"
+            RETURN ticket
+        ELSE
+            PRINT "Seat not available."
+            RETURN null
+
+    METHOD cancelTicket(ticket):
+        IF ticket in ticketsIssued AND ticket.isBooked == true
+            CALL ticket.cancel()
+            ADD ticket.seatNumber back to availableSeats
+            REMOVE ticket from ticketsIssued
+            PRINT "Ticket cancelled successfully."
+        ELSE
+            PRINT "Cancellation failed. Ticket not found."
+END CLASS
+
+
+CLASS Customer
+    ATTRIBUTES:
+        customerName
+        myTickets   // list of Ticket objects
+
+    METHOD browseMovies(theatre):
+        PRINT theatre.movieSchedule
+
+    METHOD bookTicket(theatre, movieName, seatNumber, price):
+        ticket = theatre.bookTicket(movieName, seatNumber, price)
+        IF ticket != null
+            ADD ticket to myTickets
+
+    METHOD cancelMyTicket(theatre, ticket):
+        CALL theatre.cancelTicket(ticket)
+        REMOVE ticket from myTickets
+END CLASS
+
+
+MAIN PROGRAM:
+    CREATE Theatre "PVR" with movies: ["Avengers: Endgame - 6 PM"], seats: [A10, A11, A12]
+    CREATE Customer "Ravi"
+
+    CALL Ravi.browseMovies(PVR)
+    ticket1 = Ravi.bookTicket(PVR, "Avengers: Endgame - 6 PM", "A12", 300)
+    
+    // Later...
+    Ravi.cancelMyTicket(PVR, ticket1)
