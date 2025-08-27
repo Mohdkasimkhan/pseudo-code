@@ -1,0 +1,81 @@
+CLASS Node
+    ATTRIBUTES:
+        stopName
+        next
+
+    METHOD constructor(stopName):
+        this.stopName = stopName
+        this.next = null
+END CLASS
+
+
+CLASS BusRoute
+    ATTRIBUTES:
+        head   // starting node of route
+
+    METHOD addStopAfter(targetStop, newStop):
+        current = head
+        WHILE current != null
+            IF current.stopName == targetStop
+                CREATE node = new Node(newStop)
+                node.next = current.next
+                current.next = node
+                PRINT "Stop added successfully: " + newStop
+                RETURN
+            ENDIF
+            current = current.next
+        PRINT "Target stop not found."
+
+    METHOD removeStop(stopName):
+        IF head == null
+            PRINT "Route is empty"
+            RETURN
+
+        IF head.stopName == stopName
+            head = head.next
+            PRINT "Stop removed: " + stopName
+            RETURN
+
+        current = head
+        WHILE current.next != null
+            IF current.next.stopName == stopName
+                current.next = current.next.next
+                PRINT "Stop removed: " + stopName
+                RETURN
+            ENDIF
+            current = current.next
+        PRINT "Stop not found."
+
+    METHOD searchStop(stopName):
+        current = head
+        WHILE current != null
+            IF current.stopName == stopName
+                PRINT stopName + " is in the route."
+                RETURN true
+            current = current.next
+        PRINT stopName + " not found in the route."
+        RETURN false
+
+    METHOD displayRoute():
+        current = head
+        PRINT "Bus Route:"
+        WHILE current != null
+            PRINT current.stopName + " -> "
+            current = current.next
+        PRINT "End"
+END CLASS
+
+
+MAIN PROGRAM:
+    CREATE BusRoute
+    ADD nodes in order: Depot → Main Street → City Mall → Hospital → Airport
+    DISPLAY route
+
+    CALL addStopAfter("City Mall", "University Stop")
+    DISPLAY route
+
+    CALL removeStop("Hospital")
+    DISPLAY route
+
+    CALL searchStop("Airport")
+
